@@ -36,8 +36,8 @@ void išvestis(const vector<studentas> &stud, int &MaxPav, int &MaxVard);
 void raidės(int &MaxPav, int &MaxVard, vector <studentas> &stud);
 bool isInteger(const string& s);
 void skaitymas(vector<studentas> &stud); // paprastas vedimas ranka
-void skaitymas(vector<studentas> &stud, int n, int nd_sk); // generuoja n studentų duomenis su nd_sk namų darbų pažymiais
-void skaitymas(vector<studentas> &stud, int n, int nd_sk, int vardPavSk); // generuoja n studentų duomenis su nd_sk namų darbų pažymiais ir vardais/pavardėmis iš vardPavSk dydžio sąrašo
+void skaitymas(vector<studentas> &stud, int &n, int nd_sk); // generuoja n studentų duomenis su nd_sk namų darbų pažymiais
+void skaitymas(vector<studentas> &stud, int &n, int nd_sk, int vardPavSk); // generuoja n studentų duomenis su nd_sk namų darbų pažymiais ir vardais/pavardėmis iš vardPavSk dydžio sąrašo
 
 
 int main() {
@@ -71,15 +71,7 @@ int main() {
             break;
             case 2: //veikia
                 {
-                    int n, nd_sk;
-                    cout << "Įveskite kiek studentų duomenų norite generuoti: ";
-                    string n_str;
-                    cin >> n_str;
-                    while(!isInteger(n_str) || stoi(n_str) <= 0) {
-                        cout << "Klaidinga įvestis. Bandykite dar kartą: ";
-                        cin >> n_str;
-                    }
-                    n = stoi(n_str);
+                    int n, nd_sk;;
                     cout << "Įveskite kiek namų darbų pažymių norite generuoti: ";
                     string nd_sk_str;
                     cin >> nd_sk_str;
@@ -135,26 +127,27 @@ int main() {
 void skaitymas(vector<studentas> &stud)
 {
     studentas temp;
-    cout << "Įveskite kiek studentų duomenų norite įvesti: ";
-    string n_str;
-    cin >> n_str;
-    while(!isInteger(n_str) || stoi(n_str) <= 0) {
-        cout << "Klaidinga įvestis. Bandykite dar kartą: ";
-        cin >> n_str;
-    }
-    int n = stoi(n_str);
-    for(int i = 0; i < n; i++) {
-        cout << "Įveskite " << i + 1 << " studento vardą: ";
-        cin >> temp.vardas;
-        cout << "Įveskite " << i + 1 << " studento pavardę: ";
-        cin >> temp.pavarde;
+    string laikinas;
+    int n = 0;
+    cout << "Jeigu norite baigti darba įveskite \\0" << "\n";
+    while(true) {
+        cout << "Įveskite " << n + 1 << " studento vardą: ";
+        cin >> laikinas;
+        if(laikinas == "\\0") return;
+        temp.vardas = laikinas;
+        cout << "Įveskite " << n + 1 << " studento pavardę: ";
+        cin >> laikinas;
+        if(laikinas == "\\0") return;
+        temp.pavarde = laikinas;
         int nd_count;
         cout << "Įveskite namų darbų skaičių: ";
         string nd_sk_str;
         cin >> nd_sk_str;
+        if(nd_sk_str == "\\0") return;
         while(!isInteger(nd_sk_str) || stoi(nd_sk_str) <= 0) {
             cout << "Klaidinga įvestis. Bandykite dar kartą: ";
             cin >> nd_sk_str;
+            if(nd_sk_str == "\\0") return;
         }
         nd_count = stoi(nd_sk_str);
         temp.nd.resize(nd_count);
@@ -163,25 +156,31 @@ void skaitymas(vector<studentas> &stud)
             cout << "Įveskite " << j + 1 << " namų darbų įvertinimą: ";
             string nd_str;
             cin >> nd_str;
-            while(!isInteger(nd_str) || stoi(nd_str) < 0 || stoi(nd_str) > 10 || stoi(nd_str) < 0) {
+            if(nd_str == "\\0") {
+                temp.nd.resize(j); // sumažina vektoriaus dydį iki įvestų pažymių skaičiaus
+                return;
+            }
+            while(!isInteger(nd_str) || stoi(nd_str) < 0 || stoi(nd_str) > 10) {
                 cout << "Klaidinga įvestis. Bandykite dar kartą: ";
                 cin >> nd_str;
+                if(nd_str == "\\0") return;
             }
             temp.nd[j] = stoi(nd_str);
         }
         cout << "Įveskite egzamino įvertinimą: ";
         string egz_str;
         cin >> egz_str;
-        while(!isInteger(egz_str) || stoi(egz_str) < 0) {
-            cout << "Klaidinga įvestis. Bandykite dar kartą: ";
-            cin >> egz_str;
+        if(egz_str == "\\0") {
+            temp.nd.clear();
+            return;
         }
         temp.egz = stoi(egz_str);
         stud.push_back(temp);
+        n++;
     }
 }
 
-void skaitymas(vector<studentas> &stud, int n, int nd_sk)
+void skaitymas(vector<studentas> &stud, int &n, int nd_sk)
 {
     if (n <= 0 || nd_sk <= 0) 
     {
@@ -201,23 +200,31 @@ void skaitymas(vector<studentas> &stud, int n, int nd_sk)
     Produces random integer values i, uniformly distributed on the closed interval [a, b], that is, distributed according to the discrete probability function
     */
     std::uniform_int_distribution<> dist(1, 10);
-
-    for (int i = 0; i < n; ++i) {
+    string laikinas;
+    cout << "Įveskite \\0 norėdami baigti duomenų įvedimą\n";
+    int i = 0;
+    while(true) {
         studentas temp;
         cout << "Įveskite " << i + 1 << " studento vardą: ";
-        cin >> temp.vardas;
+        cin >> laikinas;
+        if(laikinas == "\\0") break;
+        temp.vardas = laikinas;
         cout << "Įveskite " << i + 1 << " studento pavardę: ";
-        cin >> temp.pavarde;
+        cin >> laikinas;
+        if(laikinas == "\\0") break;
+        temp.pavarde = laikinas;
         temp.nd.resize(nd_sk);
         for (int j = 0; j < nd_sk; ++j) {
             temp.nd[j] = dist(gen);
         }
         temp.egz = dist(gen);
         stud.push_back(temp);
+        i++;
     }
+    n = stud.size();
 }
 
-void skaitymas(vector<studentas> &stud, int n, int nd_sk, int VardPavSk)
+void skaitymas(vector<studentas> &stud, int &n, int nd_sk, int VardPavSk)
 {
     if (n <= 0 || nd_sk <= 0 || VardPavSk <= 0) 
     {
